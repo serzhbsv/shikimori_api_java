@@ -1,8 +1,9 @@
 # Shikimori API Java Client
 
-[![GitHub release](https://img.shields.io/github/v/release/yourusername/shkimori-api)](https://github.com/serzhbsv/shikimori_api_java/releases)
+[![GitHub release](https://img.shields.io/github/v/release/serzhbsv/shikimori_api_java)](https://github.com/serzhbsv/shikimori_api_java/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Java 11+](https://img.shields.io/badge/Java-11%2B-blue.svg)](https://adoptium.net/)
+[![CI](https://github.com/serzhbsv/shikimori_api_java/actions/workflows/build.yml/badge.svg)](https://github.com/serzhbsv/shikimori_api_java/actions/workflows/build.yml)
 
 Full-featured Java client for the [Shikimori API](https://shikimori.io/api/doc).
 
@@ -143,7 +144,7 @@ Models.GraphQLResponse response = api.graphql().query(request);
 
 ```bash
 git clone https://github.com/serzhbsv/shikimori_api_java.git
-cd shkimori-api
+cd shikimori_api_java
 ./gradlew build
 ./gradlew fatJar
 ./gradlew run
