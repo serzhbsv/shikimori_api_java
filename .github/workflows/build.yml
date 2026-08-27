@@ -70,6 +70,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: build/libs/shkimori-api-*.jar
+        asset_path: build/libs/shkimori-api-1.0.0-all.jar
         asset_name: shkimori-api-${{ github.event.release.tag_name }}.jar
         asset_content_type: application/java-archive
