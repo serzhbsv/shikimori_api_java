@@ -1,49 +1,21 @@
 name: Build and Release
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  # Ручной запуск
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Версия для релиза (например: 1.0.0)'
+        required: true
+        default: '1.0.0'
+
+  # Автоматически при создании релиза
   release:
     types: [ created ]
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up JDK 11
-      uses: actions/setup-java@v4
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        cache: gradle
-    
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    
-    - name: Build with Gradle
-      run: ./gradlew build
-    
-    - name: Create Fat JAR
-      run: ./gradlew fatJar
-    
-    - name: List build/libs directory
-      run: ls -la build/libs/
-    
-    - name: Upload JAR as artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: shkimori-api-jar
-        path: build/libs/*.jar
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release'
 
     steps:
     - uses: actions/checkout@v4
@@ -61,15 +33,50 @@ jobs:
     - name: Build Fat JAR
       run: ./gradlew fatJar
     
-    - name: List build/libs directory
+    - name: List files
       run: ls -la build/libs/
     
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
+    - name: Get version
+      id: get_version
+      run: |
+        if [ "${{ github.event_name }}" == "release" ]; then
+          VERSION=${GITHUB_REF#refs/tags/}
+        else
+          VERSION=${{ github.event.inputs.version }}
+        fi
+        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+        echo "RELEASE_NAME=v${VERSION}" >> $GITHUB_OUTPUT
+    
+    - name: Upload JAR as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: shkimori-api-jar
+        path: build/libs/*.jar
+    
+    - name: Publish to GitHub Releases
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.get_version.outputs.RELEASE_NAME }}
+        name: ${{ steps.get_version.outputs.RELEASE_NAME }}
+        body: |
+          ✅ Релиз создан автоматически
+          
+          ### 📦 JAR:
+          - [Скачать JAR](https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.RELEASE_NAME }}/shkimori-api-${{ steps.get_version.outputs.VERSION }}.jar)
+          
+          ### 🔥 Что внутри:
+          - Полная поддержка REST API v1/v2
+          - GraphQL
+          - OAuth2 с обновлением токена
+          - Rate Limiting (5 rps / 90 rpm)
+          - 60+ моделей данных
+          - Java 11+
+          
+          ### 📖 Подробнее:
+          [README](https://github.com/${{ github.repository }})
+        files: |
+          build/libs/*.jar
+        draft: false
+        prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: build/libs/shkimori-api-1.0.0-all.jar
-        asset_name: shkimori-api-${{ github.event.release.tag_name }}.jar
-        asset_content_type: application/java-archive
