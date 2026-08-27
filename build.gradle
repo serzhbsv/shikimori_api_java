@@ -26,7 +26,7 @@ dependencies {
 }
 
 application {
-    mainClass = 'com.pyshiki.examples.Main'
+    mainClass = 'com.pyshiki.Main'
 }
 
 tasks.withType(JavaCompile) {
