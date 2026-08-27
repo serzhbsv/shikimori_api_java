@@ -31,6 +31,9 @@ jobs:
     - name: Create Fat JAR
       run: ./gradlew fatJar
     
+    - name: List build/libs directory
+      run: ls -la build/libs/
+    
     - name: Upload JAR as artifact
       uses: actions/upload-artifact@v4
       with:
@@ -58,12 +61,15 @@ jobs:
     - name: Build Fat JAR
       run: ./gradlew fatJar
     
+    - name: List build/libs directory
+      run: ls -la build/libs/
+    
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: build/libs/shkimori-api-all.jar
+        asset_path: build/libs/shkimori-api-*.jar
         asset_name: shkimori-api-${{ github.event.release.tag_name }}.jar
         asset_content_type: application/java-archive

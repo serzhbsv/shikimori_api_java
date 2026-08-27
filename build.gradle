@@ -50,7 +50,7 @@ task sourcesJar(type: Jar) {
 task fatJar(type: Jar) {
     manifest {
         attributes(
-            'Main-Class': 'com.pyshiki.examples.Main',
+            'Main-Class': 'com.pyshiki.Main',
             'Implementation-Title': project.name,
             'Implementation-Version': project.version,
             'Implementation-Vendor': 'pyshiki'
@@ -75,7 +75,7 @@ publishing {
             pom {
                 name = 'Shikimori API Client'
                 description = 'Full-featured Java client for Shikimori API'
-                url = 'https://github.com/yourusername/shkimori-api'
+                url = 'https://github.com/serzhbsv/shikimori_api_java'
                 licenses {
                     license {
                         name = 'MIT License'
@@ -84,9 +84,9 @@ publishing {
                 }
                 developers {
                     developer {
-                        id = 'yourusername'
-                        name = 'Your Name'
-                        email = 'your.email@example.com'
+                        id = 'DeepSeek'
+                        name = 'DeepSeek'
+                        email = 'DeepSeek@example.com'
                     }
                 }
             }
