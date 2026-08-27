@@ -1,0 +1,95 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'application'
+}
+
+group = 'com.pyshiki'
+version = '1.0.0'
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // OkHttp
+    implementation 'com.squareup.okhttp3:okhttp:4.11.0'
+    
+    // OkHttp Logging Interceptor
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.11.0'
+    
+    // Gson
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+application {
+    mainClass = 'com.pyshiki.examples.Main'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.release = 11
+}
+
+// Сборка Javadoc
+task javadocJar(type: Jar) {
+    archiveClassifier = 'javadoc'
+    from javadoc
+}
+
+// Сборка исходников
+task sourcesJar(type: Jar) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+// Fat JAR
+task fatJar(type: Jar) {
+    manifest {
+        attributes(
+            'Main-Class': 'com.pyshiki.examples.Main',
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+            'Implementation-Vendor': 'pyshiki'
+        )
+    }
+    archiveClassifier = 'all'
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
+}
+
+// Публикация в локальный Maven репозиторий
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            artifact fatJar
+            
+            pom {
+                name = 'Shikimori API Client'
+                description = 'Full-featured Java client for Shikimori API'
+                url = 'https://github.com/yourusername/shkimori-api'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'yourusername'
+                        name = 'Your Name'
+                        email = 'your.email@example.com'
+                    }
+                }
+            }
+        }
+    }
+}
