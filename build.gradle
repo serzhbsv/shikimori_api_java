@@ -28,6 +28,11 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
     options.release = 11
 }
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+    options.charSet = 'UTF-8'
+    options.docEncoding = 'UTF-8'
+}
 
 // ===== JAR задачи =====
 

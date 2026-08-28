@@ -1,10 +1,6 @@
-// ====================================================================
-// Файл: ShikimoriFullApi.java (часть 2/2)
-// Содержит: все эндпоинты, OAuth2, фасад ShikimoriApi
-// ====================================================================
-
 package com.pyshiki;
-import com.pyshiki.Models.*;
+
+import com.pyshiki.ShikimoriModels.*;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import okhttp3.*;
@@ -13,12 +9,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-// ====================================================================
-// 7. OAuth2
-// ====================================================================
-
 class OAuth2Manager {
-    private static final String TOKEN_URL = "https://shikimori.io/oauth/token";
+    private static final String TOKEN_URL = "https://shikimori.one/oauth/token";
     private final OkHttpClient client;
     private final String clientId;
     private final String clientSecret;
@@ -36,7 +28,7 @@ class OAuth2Manager {
     }
 
     public String getAuthorizationUrl() {
-        return "https://shikimori.io/oauth/authorize?" +
+        return "https://shikimori.one/oauth/authorize?" +
                 "client_id=" + clientId +
                 "&redirect_uri=" + redirectUri +
                 "&response_type=code";
@@ -101,11 +93,6 @@ class OAuth2Manager {
     }
 }
 
-// ====================================================================
-// 8. ВСЕ ЭНДПОИНТЫ
-// ====================================================================
-
-// ----- 8.1 AnimeEndpoints -----
 class AnimeEndpoints {
     private final ShikimoriClient client;
 
@@ -148,7 +135,6 @@ class AnimeEndpoints {
     }
 }
 
-// ----- 8.2 MangaEndpoints -----
 class MangaEndpoints {
     private final ShikimoriClient client;
 
@@ -183,7 +169,6 @@ class MangaEndpoints {
     }
 }
 
-// ----- 8.3 RanobeEndpoints -----
 class RanobeEndpoints {
     private final ShikimoriClient client;
 
@@ -218,7 +203,6 @@ class RanobeEndpoints {
     }
 }
 
-// ----- 8.4 UserEndpoints -----
 class UserEndpoints {
     private final ShikimoriClient client;
 
@@ -265,7 +249,6 @@ class UserEndpoints {
     }
 }
 
-// ----- 8.5 UserRateEndpoints -----
 class UserRateEndpoints {
     private final ShikimoriClient client;
 
@@ -296,7 +279,6 @@ class UserRateEndpoints {
     }
 }
 
-// ----- 8.6 TopicEndpoints -----
 class TopicEndpoints {
     private final ShikimoriClient client;
 
@@ -331,7 +313,6 @@ class TopicEndpoints {
     }
 }
 
-// ----- 8.7 CommentEndpoints -----
 class CommentEndpoints {
     private final ShikimoriClient client;
 
@@ -358,15 +339,13 @@ class CommentEndpoints {
     }
 }
 
-// ----- 8.8 CharacterEndpoints -----
-// ----- 8.8 CharacterEndpoints -----
 class CharacterEndpoints {
     private final ShikimoriClient client;
 
     public CharacterEndpoints(ShikimoriClient client) { this.client = client; }
 
-    public Models.Character byId(int id) {
-        return client.get("/api/characters/" + id, null, new TypeRef<Models.Character>(){});
+    public ShikimoriModels.Character byId(int id) {
+        return client.get("/api/characters/" + id, null, new TypeRef<ShikimoriModels.Character>(){});
     }
 
     public List<CharacterBasic> search(String query) {
@@ -374,7 +353,6 @@ class CharacterEndpoints {
     }
 }
 
-// ----- 8.9 PersonEndpoints -----
 class PersonEndpoints {
     private final ShikimoriClient client;
 
@@ -389,7 +367,6 @@ class PersonEndpoints {
     }
 }
 
-// ----- 8.10 ReviewEndpoints -----
 class ReviewEndpoints {
     private final ShikimoriClient client;
 
@@ -404,7 +381,6 @@ class ReviewEndpoints {
     }
 }
 
-// ----- 8.11 GenreEndpoints -----
 class GenreEndpoints {
     private final ShikimoriClient client;
 
@@ -415,7 +391,6 @@ class GenreEndpoints {
     }
 }
 
-// ----- 8.12 StudioEndpoints -----
 class StudioEndpoints {
     private final ShikimoriClient client;
 
@@ -426,7 +401,6 @@ class StudioEndpoints {
     }
 }
 
-// ----- 8.13 CalendarEndpoints -----
 class CalendarEndpoints {
     private final ShikimoriClient client;
 
@@ -437,7 +411,6 @@ class CalendarEndpoints {
     }
 }
 
-// ----- 8.14 AbuseRequestEndpoints -----
 class AbuseRequestEndpoints {
     private final ShikimoriClient client;
 
@@ -460,7 +433,6 @@ class AbuseRequestEndpoints {
     }
 }
 
-// ----- 8.15 FriendEndpoints -----
 class FriendEndpoints {
     private final ShikimoriClient client;
 
@@ -475,7 +447,6 @@ class FriendEndpoints {
     }
 }
 
-// ----- 8.16 FavoriteEndpoints -----
 class FavoriteEndpoints {
     private final ShikimoriClient client;
 
@@ -498,7 +469,6 @@ class FavoriteEndpoints {
     }
 }
 
-// ----- 8.17 BanEndpoints -----
 class BanEndpoints {
     private final ShikimoriClient client;
 
@@ -509,7 +479,6 @@ class BanEndpoints {
     }
 }
 
-// ----- 8.18 ForumEndpoints -----
 class ForumEndpoints {
     private final ShikimoriClient client;
 
@@ -520,7 +489,6 @@ class ForumEndpoints {
     }
 }
 
-// ----- 8.19 AchievementEndpoints -----
 class AchievementEndpoints {
     private final ShikimoriClient client;
 
@@ -531,7 +499,6 @@ class AchievementEndpoints {
     }
 }
 
-// ----- 8.20 EpisodeNotificationEndpoints -----
 class EpisodeNotificationEndpoints {
     private final ShikimoriClient client;
 
@@ -542,7 +509,6 @@ class EpisodeNotificationEndpoints {
     }
 }
 
-// ----- 8.21 GraphQLEndpoints -----
 class GraphQLEndpoints {
     private final ShikimoriClient client;
 
@@ -553,7 +519,6 @@ class GraphQLEndpoints {
     }
 }
 
-// ----- 8.22 AppearsEndpoints -----
 class AppearsEndpoints {
     private final ShikimoriClient client;
 
@@ -563,10 +528,6 @@ class AppearsEndpoints {
         client.post("/api/appears", Map.of("ids", ids), null);
     }
 }
-
-// ====================================================================
-// 9. ГЛАВНЫЙ ФАСАД ShikimoriApi
-// ====================================================================
 
 public class ShikimoriApi {
     private final ShikimoriClient client;
@@ -635,7 +596,6 @@ public class ShikimoriApi {
 
     public ShikimoriClient getClient() { return client; }
 
-    // Геттеры для всех эндпоинтов
     public AnimeEndpoints animes() { return animes; }
     public MangaEndpoints mangas() { return mangas; }
     public RanobeEndpoints ranobe() { return ranobe; }

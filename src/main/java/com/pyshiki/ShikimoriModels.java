@@ -1,8 +1,3 @@
-// ====================================================================
-// Файл: ShikimoriFullApi.java (часть 1/2)
-// Содержит: все модели данных, клиент, RateLimiter, OAuth2
-// ====================================================================
-
 package com.pyshiki;
 
 import com.google.gson.Gson;
@@ -17,10 +12,6 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-// ====================================================================
-// 1. ИСКЛЮЧЕНИЯ
-// ====================================================================
 
 class ApiException extends RuntimeException {
     private final int code;
@@ -51,10 +42,6 @@ class RateLimitException extends ApiException {
         super(message);
     }
 }
-
-// ====================================================================
-// 2. RATE LIMITER (5 rps / 90 rpm)
-// ====================================================================
 
 class RateLimiter {
     private static final int MAX_PER_SECOND = 5;
@@ -95,10 +82,6 @@ class RateLimiter {
     }
 }
 
-// ====================================================================
-// 3. БАЗОВЫЕ ТИПЫ (Common, Id, Linkable)
-// ====================================================================
-
 class Linkable {}
 
 class Id<T> {
@@ -108,16 +91,10 @@ class Id<T> {
     public void setId(T id) { this.id = id; }
 }
 
-// ====================================================================
-// 4. ВСЕ МОДЕЛИ ДАННЫХ (внутренние статические классы)
-// ====================================================================
+public class ShikimoriModels {
 
-class Models {
-
-    // ---------- 4.1 ImageSet ----------
     public static class ImageSet {
         private Map<String, String> images;
-
         public String getOriginal() { return get("original"); }
         public String getMain() { return get("main"); }
         public String getPreview() { return get("preview"); }
@@ -128,7 +105,6 @@ class Models {
         public void setImages(Map<String, String> images) { this.images = images; }
     }
 
-    // ---------- 4.2 Image ----------
     public static class Image {
         private int id;
         @SerializedName("original_url") private String originalUrl;
@@ -151,7 +127,6 @@ class Models {
         public void setUserId(int userId) { this.userId = userId; }
     }
 
-    // ---------- 4.3 Screenshot ----------
     public static class Screenshot {
         private String original;
         private String preview;
@@ -161,7 +136,6 @@ class Models {
         public void setPreview(String preview) { this.preview = preview; }
     }
 
-    // ---------- 4.4 Content (базовый) ----------
     public static abstract class Content {
         protected String name;
         protected String russian;
@@ -232,7 +206,6 @@ class Models {
         public int getValue() { return value; }
     }
 
-    // ---------- 4.5 Publisher ----------
     public static class Publisher {
         private int id;
         private String name;
@@ -242,7 +215,6 @@ class Models {
         public void setName(String name) { this.name = name; }
     }
 
-    // ---------- 4.6 Genre ----------
     public static class Genre<T> {
         private int id;
         private String name;
@@ -262,7 +234,6 @@ class Models {
         public void setEntryType(String entryType) { this.entryType = entryType; }
     }
 
-    // ---------- 4.7 Studio ----------
     public static class Studio {
         private int id;
         private String name;
@@ -282,7 +253,6 @@ class Models {
         public void setImage(String image) { this.image = image; }
     }
 
-    // ---------- 4.8 Video ----------
     public static class Video {
         private int id;
         private String url;
@@ -308,7 +278,6 @@ class Models {
         public void setHosting(String hosting) { this.hosting = hosting; }
     }
 
-    // ---------- 4.9 Anime ----------
     public static class Anime extends Content {
         private int id;
         private String kind;
@@ -359,49 +328,28 @@ class Models {
         public void setScreenshots(List<ImageSet> screenshots) { this.screenshots = screenshots; }
 
         public String getStatusRussian() {
-            if (status == null) return "Неизвестно";
+            if (status == null) return "Unknown";
             switch (status) {
-                case "anons": return "Анонс";
-                case "ongoing": return "Выходит";
-                case "released": return "Вышло";
+                case "anons": return "Anons";
+                case "ongoing": return "Ongoing";
+                case "released": return "Released";
                 default: return status;
             }
         }
 
         public String getKindRussian() {
-            if (kind == null) return "Неизвестно";
+            if (kind == null) return "Unknown";
             switch (kind) {
-                case "tv": return "ТВ-сериал";
-                case "tv_13": return "ТВ-сериал (13 эп.)";
-                case "tv_24": return "ТВ-сериал (24 эп.)";
-                case "tv_48": return "ТВ-сериал (48 эп.)";
-                case "movie": return "Фильм";
+                case "tv": return "TV";
+                case "movie": return "Movie";
                 case "ova": return "OVA";
                 case "ona": return "ONA";
-                case "special": return "Спешл";
-                case "music": return "Клип";
+                case "special": return "Special";
                 default: return kind;
             }
         }
-
-        @Override
-        public String toString() {
-            return "Anime{id=" + id + ", name='" + name + "', russian='" + russian + "', status=" + status + "}";
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Anime anime = (Anime) o;
-            return id == anime.id;
-        }
-
-        @Override
-        public int hashCode() { return Objects.hash(id); }
     }
 
-    // ---------- 4.10 AnimeBasic ----------
     public static class AnimeBasic extends Content {
         private int id;
         private String kind;
@@ -421,7 +369,6 @@ class Models {
         public void setEpisodesAired(int episodesAired) { this.episodesAired = episodesAired; }
     }
 
-    // ---------- 4.11 AnimeRelation ----------
     public static class AnimeRelation {
         private String relation;
         @SerializedName("relation_string") private String relationString;
@@ -435,7 +382,6 @@ class Models {
         public void setAnime(AnimeBasic anime) { this.anime = anime; }
     }
 
-    // ---------- 4.12 Manga ----------
     public static class Manga extends Content {
         private int id;
         private String kind;
@@ -459,21 +405,8 @@ class Models {
         public void setVolumes(int volumes) { this.volumes = volumes; }
         public void setChapters(int chapters) { this.chapters = chapters; }
         public void setPublishers(List<Publisher> publishers) { this.publishers = publishers; }
-
-        public String getStatusRussian() {
-            if (status == null) return "Неизвестно";
-            switch (status) {
-                case "anons": return "Анонс";
-                case "ongoing": return "Выходит";
-                case "released": return "Вышло";
-                case "paused": return "Приостановлено";
-                case "discontinued": return "Прекращено";
-                default: return status;
-            }
-        }
     }
 
-    // ---------- 4.13 MangaBasic ----------
     public static class MangaBasic extends Content {
         private int id;
         private String kind;
@@ -493,7 +426,6 @@ class Models {
         public void setChapters(int chapters) { this.chapters = chapters; }
     }
 
-    // ---------- 4.14 MangaRelation ----------
     public static class MangaRelation {
         private String relation;
         @SerializedName("relation_string") private String relationString;
@@ -507,7 +439,6 @@ class Models {
         public void setManga(MangaBasic manga) { this.manga = manga; }
     }
 
-    // ---------- 4.15 Ranobe ----------
     public static class Ranobe extends Content {
         private int id;
         private String kind;
@@ -533,7 +464,6 @@ class Models {
         public void setPublishers(List<Publisher> publishers) { this.publishers = publishers; }
     }
 
-    // ---------- 4.16 RanobeBasic ----------
     public static class RanobeBasic extends Content {
         private int id;
         private String kind;
@@ -553,7 +483,6 @@ class Models {
         public void setChapters(int chapters) { this.chapters = chapters; }
     }
 
-    // ---------- 4.17 RanobeRelation ----------
     public static class RanobeRelation {
         private String relation;
         @SerializedName("relation_string") private String relationString;
@@ -567,7 +496,6 @@ class Models {
         public void setRanobe(RanobeBasic ranobe) { this.ranobe = ranobe; }
     }
 
-    // ---------- 4.18 User ----------
     public static class User {
         private int id;
         private String nickname;
@@ -635,7 +563,6 @@ class Models {
         public void setStyleId(Integer styleId) { this.styleId = styleId; }
     }
 
-    // ---------- 4.19 UserBasic ----------
     public static class UserBasic {
         private int id;
         private String nickname;
@@ -658,7 +585,6 @@ class Models {
         public void setUrl(String url) { this.url = url; }
     }
 
-    // ---------- 4.20 UserStats ----------
     public static class UserStats {
         private Map<String, UserStatsStatus> statuses;
         private Map<String, UserStatsStatus> fullStatuses;
@@ -723,7 +649,6 @@ class Models {
         public void setValue(int value) { this.value = value; }
     }
 
-    // ---------- 4.21 UserFavourites ----------
     public static class UserFavourites {
         private List<UserFavourite> animes;
         private List<UserFavourite> mangas;
@@ -770,7 +695,6 @@ class Models {
         public void setUrl(String url) { this.url = url; }
     }
 
-    // ---------- 4.22 UserHistoryRecord ----------
     public static class UserHistoryRecord {
         private int id;
         @SerializedName("created_at") private String createdAt;
@@ -787,7 +711,6 @@ class Models {
         public void setTarget(Object target) { this.target = target; }
     }
 
-    // ---------- 4.23 UserUnreadMessages ----------
     public static class UserUnreadMessages {
         private int messages;
         private int news;
@@ -800,7 +723,6 @@ class Models {
         public void setNotifications(int notifications) { this.notifications = notifications; }
     }
 
-    // ---------- 4.24 UserRate ----------
     public static class UserRate {
         private int id;
         @SerializedName("user_id") private int userId;
@@ -848,20 +770,19 @@ class Models {
         public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
 
         public String getStatusRussian() {
-            if (status == null) return "Неизвестно";
+            if (status == null) return "Unknown";
             switch (status) {
-                case "planned": return "Запланировано";
-                case "watching": return "Смотрю";
-                case "completed": return "Просмотрено";
-                case "rewatching": return "Пересматриваю";
-                case "on_hold": return "Отложено";
-                case "dropped": return "Брошено";
+                case "planned": return "Planned";
+                case "watching": return "Watching";
+                case "completed": return "Completed";
+                case "rewatching": return "Rewatching";
+                case "on_hold": return "On Hold";
+                case "dropped": return "Dropped";
                 default: return status;
             }
         }
     }
 
-    // ---------- 4.25 UserRateBasic ----------
     public static class UserRateBasic {
         private int id;
         private int score;
@@ -899,7 +820,6 @@ class Models {
         public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
     }
 
-    // ---------- 4.26 UserRateTemplate ----------
     public static class UserRateTemplate {
         @SerializedName("user_id") private int userId;
         @SerializedName("target_id") private int targetId;
@@ -934,7 +854,6 @@ class Models {
         public void setText(String text) { this.text = text; }
     }
 
-    // ---------- 4.27 Topic ----------
     public static class Topic<T> {
         private int id;
         @SerializedName("topic_title") private String topicTitle;
@@ -990,7 +909,6 @@ class Models {
         public void setEpisode(Integer episode) { this.episode = episode; }
     }
 
-    // ---------- 4.28 TopicBasic ----------
     public static class TopicBasic {
         private int id;
         private Object linked;
@@ -1013,7 +931,6 @@ class Models {
         public void setUrl(String url) { this.url = url; }
     }
 
-    // ---------- 4.29 TopicIgnore ----------
     public static class TopicIgnore {
         @SerializedName("user_id") private int userId;
         @SerializedName("is_ignored") private boolean isIgnored;
@@ -1024,7 +941,6 @@ class Models {
         public void setIgnored(boolean ignored) { isIgnored = ignored; }
     }
 
-    // ---------- 4.30 Comment ----------
     public static class Comment {
         private int id;
         @SerializedName("user_id") private int userId;
@@ -1065,7 +981,6 @@ class Models {
         public void setUser(UserBasic user) { this.user = user; }
     }
 
-    // ---------- 4.31 CommentBasic ----------
     public static class CommentBasic {
         private int id;
         private int commentableId;
@@ -1094,7 +1009,6 @@ class Models {
         public void setOfftopic(boolean offtopic) { isOfftopic = offtopic; }
     }
 
-    // ---------- 4.32 CommentTemplate ----------
     public static class CommentTemplate {
         private String body;
         private int commentableId;
@@ -1111,7 +1025,6 @@ class Models {
         public void setIsOfftopic(Boolean isOfftopic) { this.isOfftopic = isOfftopic; }
     }
 
-    // ---------- 4.33 Character ----------
     public static class Character {
         private int id;
         private String name;
@@ -1167,7 +1080,6 @@ class Models {
         public void setMangas(List<RoleBased<MangaBasic>> mangas) { this.mangas = mangas; }
     }
 
-    // ---------- 4.34 CharacterBasic ----------
     public static class CharacterBasic {
         private int id;
         private String name;
@@ -1187,7 +1099,6 @@ class Models {
         public void setUrl(String url) { this.url = url; }
     }
 
-    // ---------- 4.35 RoleBased ----------
     public static class RoleBased<T> {
         private String role;
         private List<String> roles;
@@ -1201,7 +1112,6 @@ class Models {
         public void setData(T data) { this.data = data; }
     }
 
-    // ---------- 4.36 Person ----------
     public static class Person {
         private int id;
         private String name;
@@ -1278,7 +1188,6 @@ class Models {
         public void setBirthday(PersonVitalDay birthday) { this.birthday = birthday; }
     }
 
-    // ---------- 4.37 PersonBasic ----------
     public static class PersonBasic {
         private int id;
         private String name;
@@ -1298,7 +1207,6 @@ class Models {
         public void setUrl(String url) { this.url = url; }
     }
 
-    // ---------- 4.38 PersonVitalDay ----------
     public static class PersonVitalDay {
         private int day;
         private int month;
@@ -1311,14 +1219,12 @@ class Models {
         public void setYear(int year) { this.year = year; }
     }
 
-    // ---------- 4.39 PersonGroupedRole ----------
     public static class PersonGroupedRole {
         private List<String> roles;
         public List<String> getRoles() { return roles; }
         public void setRoles(List<String> roles) { this.roles = roles; }
     }
 
-    // ---------- 4.40 PersonRole ----------
     public static class PersonRole {
         private List<CharacterBasic> characters;
         private List<AnimeBasic> anime;
@@ -1328,7 +1234,6 @@ class Models {
         public void setAnime(List<AnimeBasic> anime) { this.anime = anime; }
     }
 
-    // ---------- 4.41 PersonWork ----------
     public static class PersonWork {
         private AnimeBasic anime;
         private MangaBasic manga;
@@ -1341,7 +1246,6 @@ class Models {
         public void setRole(String role) { this.role = role; }
     }
 
-    // ---------- 4.42 Review ----------
     public static class Review {
         private int id;
         @SerializedName("user_id") private int userId;
@@ -1385,7 +1289,6 @@ class Models {
         public void setChangedAt(String changedAt) { this.changedAt = changedAt; }
     }
 
-    // ---------- 4.43 Forum ----------
     public static class Forum {
         private int id;
         private int position;
@@ -1405,7 +1308,6 @@ class Models {
         public void setUrl(String url) { this.url = url; }
     }
 
-    // ---------- 4.44 Franchise ----------
     public static class Franchise {
         private List<FranchiseLink> links;
         private List<FranchiseNode> nodes;
@@ -1419,7 +1321,6 @@ class Models {
         public void setCurrentId(int currentId) { this.currentId = currentId; }
     }
 
-    // ---------- 4.45 FranchiseLink ----------
     public static class FranchiseLink {
         private int id;
         private int sourceId;
@@ -1445,7 +1346,6 @@ class Models {
         public void setRelation(String relation) { this.relation = relation; }
     }
 
-    // ---------- 4.46 FranchiseNode ----------
     public static class FranchiseNode {
         private int id;
         private int date;
@@ -1474,7 +1374,6 @@ class Models {
         public void setWeight(int weight) { this.weight = weight; }
     }
 
-    // ---------- 4.47 ExternalLink ----------
     public static class ExternalLink {
         private Integer id;
         private String kind;
@@ -1506,7 +1405,6 @@ class Models {
         public void setImportedAt(String importedAt) { this.importedAt = importedAt; }
     }
 
-    // ---------- 4.48 Episode ----------
     public static class Episode {
         @SerializedName("next_episode") private int nextEpisode;
         @SerializedName("next_episode_at") private String nextEpisodeAt;
@@ -1523,7 +1421,6 @@ class Models {
         public void setAnime(AnimeBasic anime) { this.anime = anime; }
     }
 
-    // ---------- 4.49 EpisodeNotification ----------
     public static class EpisodeNotification {
         private int id;
         @SerializedName("anime_id") private int animeId;
@@ -1552,7 +1449,6 @@ class Models {
         public void setTopicId(int topicId) { this.topicId = topicId; }
     }
 
-    // ---------- 4.50 EpisodeNotificationTemplate ----------
     public static class EpisodeNotificationTemplate {
         @SerializedName("anime_id") private int animeId;
         private int episode;
@@ -1578,7 +1474,6 @@ class Models {
         public void setIsAnime365(Boolean isAnime365) { this.isAnime365 = isAnime365; }
     }
 
-    // ---------- 4.51 Ban ----------
     public static class Ban {
         private int id;
         @SerializedName("user_id") private int userId;
@@ -1610,7 +1505,6 @@ class Models {
         public void setModerator(UserBasic moderator) { this.moderator = moderator; }
     }
 
-    // ---------- 4.52 Achievement ----------
     public static class Achievement {
         private int id;
         @SerializedName("neko_id") private String nekoId;
@@ -1636,7 +1530,6 @@ class Models {
         public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
     }
 
-    // ---------- 4.53 Role ----------
     public static class Role {
         private List<String> roles;
         @SerializedName("roles_russian") private List<String> rolesRussian;
@@ -1653,7 +1546,6 @@ class Models {
         public void setPerson(PersonBasic person) { this.person = person; }
     }
 
-    // ---------- 4.54 Style ----------
     public static class Style {
         private Integer id;
         @SerializedName("owner_id") private Integer ownerId;
@@ -1682,7 +1574,6 @@ class Models {
         public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
     }
 
-    // ---------- 4.55 AbuseRequest ----------
     public static class AbuseRequest {
         private String kind;
         private boolean value;
@@ -1696,7 +1587,6 @@ class Models {
         public void setAffectedIds(List<Integer> affectedIds) { this.affectedIds = affectedIds; }
     }
 
-    // ---------- 4.56 IgnoreNotice ----------
     public static class IgnoreNotice {
         @SerializedName("topic_id") private int topicId;
         @SerializedName("is_ignored") private boolean isIgnored;
@@ -1707,7 +1597,6 @@ class Models {
         public void setIgnored(boolean ignored) { isIgnored = ignored; }
     }
 
-    // ---------- 4.57 ContentConstants ----------
     public static class ContentConstants {
         private List<String> kind;
         private List<String> status;
@@ -1717,14 +1606,12 @@ class Models {
         public void setStatus(List<String> status) { this.status = status; }
     }
 
-    // ---------- 4.58 UserRateConstants ----------
     public static class UserRateConstants {
         private List<String> status;
         public List<String> getStatus() { return status; }
         public void setStatus(List<String> status) { this.status = status; }
     }
 
-    // ---------- 4.59 ClubConstants ----------
     public static class ClubConstants {
         @SerializedName("join_policy") private List<String> joinPolicy;
         @SerializedName("comment_policy") private List<String> commentPolicy;
@@ -1738,7 +1625,6 @@ class Models {
         public void setImageUploadPolicy(List<String> imageUploadPolicy) { this.imageUploadPolicy = imageUploadPolicy; }
     }
 
-    // ---------- 4.60 Smiley ----------
     public static class Smiley {
         private String bbcode;
         private String path;
@@ -1748,7 +1634,6 @@ class Models {
         public void setPath(String path) { this.path = path; }
     }
 
-    // ---------- 4.61 GraphQL ----------
     public static class GraphQLRequest {
         private String query;
         private Map<String, Object> variables;
@@ -1787,12 +1672,8 @@ class Models {
     }
 }
 
-// ====================================================================
-// 5. SHIKIMORI CLIENT (OkHttp + Gson + RateLimiter)
-// ====================================================================
-
 class ShikimoriClient {
-    private static final String BASE_URL = "https://shikimori.io";
+    private static final String BASE_URL = "https://shikimori.one";
     private static final String USER_AGENT = "ShikiApp-Java/1.0";
 
     private final OkHttpClient client;
@@ -1806,9 +1687,7 @@ class ShikimoriClient {
 
     public ShikimoriClient(String accessToken) {
         this.accessToken = accessToken;
-        this.gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
+        this.gson = new GsonBuilder().setPrettyPrinting().create();
         this.rateLimiter = new RateLimiter();
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -1850,6 +1729,7 @@ class ShikimoriClient {
         return accessToken;
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T executeRequest(String path, String method, Object body, TypeRef<T> typeRef) {
         try {
             String url = BASE_URL + path;
@@ -1894,12 +1774,12 @@ class ShikimoriClient {
 
                 if (typeRef != null && response.body() != null) {
                     String json = response.body().string();
-if (typeRef.isList()) {
-    Type listType = TypeToken.getParameterized(List.class, typeRef.getClazz()).getType();
-    return gson.fromJson(json, listType);
-} else {
-    return gson.fromJson(json, (Class<T>) typeRef.getClazz());
-}
+                    if (typeRef.isList()) {
+                        Type listType = TypeToken.getParameterized(List.class, typeRef.getClazz()).getType();
+                        return gson.fromJson(json, listType);
+                    } else {
+                        return gson.fromJson(json, (Class<T>) typeRef.getClazz());
+                    }
                 }
                 return null;
             }
@@ -1916,7 +1796,6 @@ if (typeRef.isList()) {
         return RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
     }
 
-    // Методы для вызова из эндпоинтов
     public <T> T get(String path, Map<String, Object> params, TypeRef<T> typeRef) {
         return executeRequest(path, "GET", params, typeRef);
     }
@@ -1938,18 +1817,14 @@ if (typeRef.isList()) {
     }
 }
 
-// ====================================================================
-// 6. TYPE REF (для типизированных ответов)
-// ====================================================================
-
 abstract class TypeRef<T> {
-    private final java.lang.reflect.Type type;
+    private final Type type;
     private final Class<?> clazz;
     private final boolean isList;
 
     @SuppressWarnings("unchecked")
     protected TypeRef() {
-        java.lang.reflect.Type superClass = getClass().getGenericSuperclass();
+        Type superClass = getClass().getGenericSuperclass();
         this.type = ((java.lang.reflect.ParameterizedType) superClass).getActualTypeArguments()[0];
         this.isList = type.getTypeName().startsWith("java.util.List");
 
@@ -1960,7 +1835,7 @@ abstract class TypeRef<T> {
         }
     }
 
-    public java.lang.reflect.Type getType() { return type; }
+    public Type getType() { return type; }
     public Class<?> getClazz() { return clazz; }
     public boolean isList() { return isList; }
 }
