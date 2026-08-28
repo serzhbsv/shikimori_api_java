@@ -62,7 +62,7 @@ jobs:
           ✅ Релиз создан автоматически
           
           ### 📦 JAR:
-          - [Скачать JAR](https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.RELEASE_NAME }}/shkimori-api-${{ steps.get_version.outputs.VERSION }}.jar)
+          - [Скачать JAR](https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.RELEASE_NAME }}/shkimori-api-${{ steps.get_version.outputs.VERSION }}-all.jar)
           
           ### 🔥 Что внутри:
           - Полная поддержка REST API v1/v2
